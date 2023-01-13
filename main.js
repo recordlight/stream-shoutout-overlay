@@ -87,7 +87,7 @@ const mainfunction = async function(){
             const random = Math.floor(Math.random() * response.data.length);
             chosenClip = response.data[random];
 
-            videoContent.innerHTML = response.data[0].embed_url+"&parent=recordlight.github.io&preload=auto";
+            videoContent.setAttribute("src", response.data[0].embed_url+"&parent=recordlight.github.io&preload=auto");
           }
         );
       })
