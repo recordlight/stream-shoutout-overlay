@@ -1,6 +1,10 @@
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 
+const shoutoutQueue = [];
+
+const timer = 10000;
+
 
 
 let dialogElement = document.getElementById("dialog-box");
@@ -32,9 +36,15 @@ const mainfunction = async function(){
     console.log(mainChannel === channel);
     if(message.startsWith("!so ")) {
       let username = extractUsername(message);
-      let userInfo = getUsernameInfo(username).then((response)=>console.log(response));
-      console.log(userInfo);
+      
+      if(shoutoutQueue.length === 0){
+        let userInfo = getUsernameInfo(username).then((response)=>console.log(response));
+        shoutoutQueue.push(username);
+      } else {
+        shoutoutQueue.push(username);
+      }
     }
+
   });
 
   function extractUsername(message) {
@@ -42,57 +52,89 @@ const mainfunction = async function(){
     var arr = message.match(rx);
     return arr[1]; 
   }
+  
+  function resetAnimation() {
+    dialogElement.classList.remove(["fadeOutRight"]);
+    dialogElement.style.animation = 'none';
+    dialogElement.offsetHeight; /* trigger reflow */
+    dialogElement.style.animation = null; 
+  }
+
+  function resetBox(){
+    dialogElement.classList.add(["fadeOutRight"]);
+    videoFrame.innerHTML = "";
+    streamerName.innerHTML = " ";
+    streamerCategory.innerHTML = "";
+    profileImage.setAttribute("src","");
+    shoutoutQueue.shift();
+    if(shoutoutQueue.length > 0){
+      getUsernameInfo(shoutoutQueue[0]).then((response)=>console.log(response));
+    }
+  }
 
   function getUsernameInfo(userId){
+    
     console.log('getting username info');
-    token = getToken().then((token) => {
-        console.log("abcd");
-        result = fetch("https://api.twitch.tv/helix/users?login="+userId, {
+
+    Promise.all([
+      token = getToken().then((token) => {
+          console.log("abcd");
+          result = fetch("https://api.twitch.tv/helix/users?login="+userId, {
+          method: "GET",
+          headers:{
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer '+ token.access_token,
+            'Client-Id': clientId
+          }
+        })
+        .then(response => response.json())
+        .then(response => {
+          console.log(response);
+          streamerName.innerHTML = response.data[0].display_name;
+          profileImage.setAttribute("src", response.data[0].profile_image_url);
+          fetch("https://api.twitch.tv/helix/channels?broadcaster_id="+response.data[0].id, {
+            method: "GET",
+            headers:{
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer '+ token.access_token,
+              'Client-Id': clientId
+            }
+          }).then(response => response.json())
+          .then(response => {
+              console.log(response);
+              streamerCategory.innerHTML = response.data[0].game_name;
+              setTimeout(resetBox, timer);
+            }
+          );
+        })
+      })
+      
+      ,
+      fetch("https://twitchapi.teklynk.com/getuserclips.php?channel="+userId+"&limit=100", {
         method: "GET",
         headers:{
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer '+ token.access_token,
-          'Client-Id': clientId
         }
-      })
-      .then(response => response.json())
+      }).then(response => response.json())
       .then(response => {
-        console.log(response);
-        streamerName.innerHTML = response.data[0].login;
-        profileImage.setAttribute("src", response.data[0].profile_image_url);
-        fetch("https://api.twitch.tv/helix/channels?broadcaster_id="+response.data[0].id, {
-          method: "GET",
-          headers:{
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer '+ token.access_token,
-            'Client-Id': clientId
-          }
-        }).then(response => response.json())
-        .then(response => {
-            console.log(response);
-            streamerCategory.innerHTML = response.data[0].game_name;
-          }
-        );
+          console.log(response.data);
+          const random = Math.floor(Math.random() * response.data.length);
+          chosenClip = response.data[random];
 
-        fetch("https://api.twitch.tv/helix/clips?broadcaster_id="+response.data[0].id, {
-          method: "GET",
-          headers:{
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer '+ token.access_token,
-            'Client-Id': clientId
-          }
-        }).then(response => response.json())
-        .then(response => {
-            console.log(response.data);
-            const random = Math.floor(Math.random() * response.data.length);
-            chosenClip = response.data[random];
+          console.log(chosenClip);
 
-            videoContent.setAttribute("src", response.data[0].embed_url+"&parent=recordlight.github.io");
-            videoContent.setAttribute("autoplay", true);
-          }
-        );
-      })
+          console.log(videoFrame);
+          videoFrame.innerHTML = `
+              <video id="video-content" autoplay muted loop>
+                <source src="${chosenClip.clip_url}" type="video/mp4" />
+              </video>`;
+        }
+      )
+    ]).then(()=>{
+      setTimeout(
+        resetAnimation(),3000
+      );
     })
+
 
     return token;
     
