@@ -41,7 +41,7 @@ body{
     left:15px;
     top: 15px;
     width: 506px;
-    height:327px;
+    height:307px;
     overflow: hidden;
     background-color:#EDE4D6;
     border-color: #DD7D36;
@@ -63,17 +63,18 @@ p { margin:0 }
 
 .text-area p {
     color: #ffffff;
+    font-size: 18px;
 }
 
 #streamer-name{
-    font-size: 22px;
+    font-size: 24px;
 }
 
 .text-area img {
     float: left;
     margin-right: 20px;
-    width: 55px;
-    height: 55px;
+    width: 80px;
+    height: 80px;
     border-radius: 50%;
 }
 

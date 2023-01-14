@@ -91,21 +91,25 @@ const mainfunction = async function(){
         .then(response => response.json())
         .then(response => {
           console.log(response);
-          streamerName.innerHTML = response.data[0].display_name;
-          profileImage.setAttribute("src", response.data[0].profile_image_url);
-          fetch("https://api.twitch.tv/helix/channels?broadcaster_id="+response.data[0].id, {
-            method: "GET",
-            headers:{
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer '+ token.access_token,
-              'Client-Id': clientId
-            }
-          }).then(response => response.json())
-          .then(response => {
-              streamerCategory.innerHTML = response.data[0].game_name;
-              setTimeout(resetBox, timer);
-            }
-          );
+          if(response.data.length > 0){
+            streamerName.innerHTML = response.data[0].display_name;
+            profileImage.setAttribute("src", response.data[0].profile_image_url);
+            fetch("https://api.twitch.tv/helix/channels?broadcaster_id="+response.data[0].id, {
+              method: "GET",
+              headers:{
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer '+ token.access_token,
+                'Client-Id': clientId
+              }
+            }).then(response => response.json())
+            .then(response => {
+                streamerCategory.innerHTML = response.data[0].game_name;
+                setTimeout(resetBox, timer);
+              }
+            );
+          } else {
+            setTimeout(resetBox, 0);
+          }
         })
       })
       
