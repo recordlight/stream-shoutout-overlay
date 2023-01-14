@@ -3,7 +3,7 @@ const urlParams = new URLSearchParams(queryString);
 
 const shoutoutQueue = [];
 
-const timer = 10000;
+const timer = 11000;
 
 
 
@@ -139,7 +139,7 @@ const mainfunction = async function(){
       )
     ]).then(()=>{
       setTimeout(
-        resetAnimation(),3000
+        resetAnimation(),4000
       );
     })
 
