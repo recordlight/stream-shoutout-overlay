@@ -101,7 +101,6 @@ const mainfunction = async function(){
             }
           }).then(response => response.json())
           .then(response => {
-              console.log(response);
               streamerCategory.innerHTML = response.data[0].game_name;
               setTimeout(resetBox, timer);
             }
@@ -129,7 +128,7 @@ const mainfunction = async function(){
                   <source src="${chosenClip.clip_url}" type="video/mp4" />
                 </video>`;
           } else {
-            
+
           }
         }
       )
