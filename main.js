@@ -32,9 +32,9 @@ const mainfunction = async function(){
 
   client.on('message', (channel, tags, message, self) => {
     console.log(channel);
-    console.log(tags.username);
+    console.log(tags);
     console.log(mainChannel === channel);
-    if(message.startsWith("!so ")) {
+    if(message.startsWith("!so ") && ('#'+mainChannel === channel || tags.mod === true )) {
       let username = extractUsername(message);
       
       if(shoutoutQueue.length === 0){
