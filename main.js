@@ -3,7 +3,8 @@ const urlParams = new URLSearchParams(queryString);
 
 const shoutoutQueue = [];
 
-const timer = 11000;
+const timer = 18000;
+const popupdelaytimer = 10000;
 
 
 
@@ -38,7 +39,7 @@ const mainfunction = async function(){
       let username = extractUsername(message);
       
       if(shoutoutQueue.length === 0){
-        let userInfo = getUsernameInfo(username).then((response)=>console.log(response));
+        getUsernameInfo(username).then((response)=>console.log(response))
         shoutoutQueue.push(username);
       } else {
         shoutoutQueue.push(username);
@@ -48,9 +49,7 @@ const mainfunction = async function(){
   });
 
   function extractUsername(message) {
-    var rx = '^!so ([^\s]+)';
-    var arr = message.match(rx);
-    return arr[1]; 
+    return message.slice(4);
   }
   
   function resetAnimation() {
@@ -70,27 +69,25 @@ const mainfunction = async function(){
     shoutoutQueue.shift();
     if(shoutoutQueue.length > 0){
       getUsernameInfo(shoutoutQueue[0]).then((response)=>console.log(response));
-    }}, 1000);
+    }}, 2000);
   }
 
   function getUsernameInfo(userId){
     
-    console.log('getting username info');
+    console.log('getting username info: ' +userId);
 
     Promise.all([
       token = getToken().then((token) => {
-          console.log("abcd");
           result = fetch("https://api.twitch.tv/helix/users?login="+userId, {
-          method: "GET",
-          headers:{
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer '+ token.access_token,
-            'Client-Id': clientId
-          }
-        })
+            method: "GET",
+            headers:{
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer '+ token.access_token,
+              'Client-Id': clientId
+            }
+          })
         .then(response => response.json())
         .then(response => {
-          console.log(response);
           if(response.data.length > 0){
             streamerName.innerHTML = response.data[0].display_name;
             profileImage.setAttribute("src", response.data[0].profile_image_url);
@@ -139,7 +136,7 @@ const mainfunction = async function(){
       )
     ]).then(()=>{
       setTimeout(
-        resetAnimation(),4000
+        resetAnimation(),popupdelaytimer
       );
     })
 
