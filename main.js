@@ -117,16 +117,20 @@ const mainfunction = async function(){
       }).then(response => response.json())
       .then(response => {
           console.log(response.data);
-          const random = Math.floor(Math.random() * response.data.length);
-          chosenClip = response.data[random];
+          if(response.data.length > 0){
+            const random = Math.floor(Math.random() * response.data.length);
+            chosenClip = response.data[random];
 
-          console.log(chosenClip);
+            console.log(chosenClip);
 
-          console.log(videoFrame);
-          videoFrame.innerHTML = `
-              <video id="video-content" autoplay muted loop>
-                <source src="${chosenClip.clip_url}" type="video/mp4" />
-              </video>`;
+            console.log(videoFrame);
+            videoFrame.innerHTML = `
+                <video id="video-content" autoplay muted loop>
+                  <source src="${chosenClip.clip_url}" type="video/mp4" />
+                </video>`;
+          } else {
+            
+          }
         }
       )
     ]).then(()=>{
