@@ -62,6 +62,7 @@ const mainfunction = async function(){
 
   function resetBox(){
     dialogElement.classList.add(["fadeOutRight"]);
+    setTimeout(() => {
     videoFrame.innerHTML = "";
     streamerName.innerHTML = " ";
     streamerCategory.innerHTML = "";
@@ -69,7 +70,7 @@ const mainfunction = async function(){
     shoutoutQueue.shift();
     if(shoutoutQueue.length > 0){
       getUsernameInfo(shoutoutQueue[0]).then((response)=>console.log(response));
-    }
+    }}, 1000);
   }
 
   function getUsernameInfo(userId){
