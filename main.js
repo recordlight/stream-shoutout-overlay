@@ -3,8 +3,8 @@ const urlParams = new URLSearchParams(queryString);
 
 const shoutoutQueue = [];
 
-const timer = 15000;
-const popupdelaytimer = 12000;
+const timer = 10000;
+const popupdelaytimer = 14000;
 
 
 
